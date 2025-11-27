@@ -11,11 +11,11 @@ function fileChange(e: React.ChangeEvent<HTMLInputElement>) {
   if (!e.target.files) return;
   if (!fileText) return;
 
-  fileText.textContent = '';
+  if (fileText.textContent == 'Import files') fileText.textContent = '';
 
-  for (let step = 0; step < e.target.files.length; step++) { //ADD function that prevents file overload
-    const file = e.target.files[step]                        //(when you try upload more files on second click
-    fileText.textContent += `${file.name}\n`;                //it deletes the previous files)
+  for (let step = 0; step < e.target.files.length; step++) {
+    const file = e.target.files[step]                       
+    fileText.textContent += `${file.name}, `;               
 
     if (file.type.startsWith("image/")) { //if file is image: create a preview
       console.log("recieved")
@@ -38,16 +38,16 @@ function fileChange(e: React.ChangeEvent<HTMLInputElement>) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-6xl flex-col items-center justify-center py-32 px-16 bg-white dark:bg-black">
-          <div className="border-cyan-800 flex flex-col justify-between items-center whitespace-pre-wrap font-bold text-3xl border-4 rounded-2xl min-h-82 min-w-1/2 bg-gray-200">
+          <div className="border-cyan-800 flex flex-col justify-between items-center font-bold text-3xl border-4 rounded-2xl min-h-82 min-w-1/2 bg-gray-200">
           <label id="fileText" className="" htmlFor="dragdrop">
           Import files
           </label>
           <input multiple type="file" id="dragdrop" onChange={fileChange} className="hidden"></input>
             <div id="previewContainer" 
-              className="flex gap-6 py-8 px-2 bg-cyan-800 min-w-full text-3xl font-medium text-blue-100"
+              className="flex shrink flex-wrap overflow-hidden gap-6 py-4 px-2 bg-cyan-800 min-w-full text-3xl font-medium text-blue-100"
             >
             <h1>Preview:</h1>
-            {previewImages.map((item, i) => {return (<img src={item} key={i}></img>)})}
+            {previewImages.map((item, i) => {return (<img className="max-w-40 max-h-40 border-2" src={item} key={i}></img>)})}
 
             </div>
           </div>
