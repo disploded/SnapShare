@@ -28,7 +28,14 @@ function fileChange(e: React.ChangeEvent<HTMLInputElement>) {
 }
 
   function submitFiles() {
-    console.log("submit"); //get file data and put into a room. use code generation & password (optional)
+    //get file data and put into a room. use code generation & password (optional)
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+    const charactersLength = characters.length;
+    let roomCode = '';
+    for (let i = 0; i < 6; i++) {
+      roomCode += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    console.log(roomCode);
   }
 
   function joinButton() {
