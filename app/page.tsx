@@ -1,31 +1,38 @@
-'use client'
-import Image from "next/image";
+'use client';
 import './globals.css';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { socket } from "../socket.js";
 
 export default function Home() {
-const [previewImages, setPreviewImages] = useState<string[]>([]);
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log(`Connected to server`)
+    })
+  });
 
-function fileChange(e: React.ChangeEvent<HTMLInputElement>) {
-  const fileText = document.getElementById('fileText');
-  if (!e.target.files) return;
-  if (!fileText) return;
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
 
-  if (fileText.textContent == 'Import files') fileText.textContent = '';
+  function fileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const fileText = document.getElementById('fileText');
+    if (!e.target.files) return;
+    if (!fileText) return;
 
-  for (let step = 0; step < e.target.files.length; step++) {
-    const file = e.target.files[step]                       
-    fileText.textContent += `${file.name}, `;               
+    if (fileText.textContent == 'Import files') fileText.textContent = '';
 
-    if (file.type.startsWith("image/")) { //if file is image: create a preview
-      console.log("recieved")
+    for (let step = 0; step < e.target.files.length; step++) {
+      const file = e.target.files[step]                       
+      fileText.textContent += `${file.name}, `;               
 
-      const url = URL.createObjectURL(file);
-      //create image element and insert with url as src parameter
-      setPreviewImages(prev => [...prev, url]);
+      if (file.type.startsWith("image/")) { //if file is image: create a preview
+        console.log("recieved")
+
+        const url = URL.createObjectURL(file);
+        //create image element and insert with url as src parameter
+        setPreviewImages(prev => [...prev, url]);
+        // URL.revokeObjectURL(url);
+      }
     }
   }
-}
 
   function submitFiles() {
     //get file data and put into a room. use code generation & password (optional)
