@@ -1,9 +1,11 @@
 'use client';
-import './globals.css';
-import React, { useEffect, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { socket } from "../socket.js";
 
 export default function Home() {
+  const router = useRouter();
+
   useEffect(() => {
     socket.on("connect", () => {
       console.log(`Connected to server`)
@@ -35,7 +37,7 @@ export default function Home() {
   }
 
   function submitFiles() {
-    //get file data and put into a room. use code generation & password (optional)
+    //get file data and put into a room. using code generation & password (optional)
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
     const charactersLength = characters.length;
     let roomCode = '';
@@ -43,6 +45,8 @@ export default function Home() {
       roomCode += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     console.log(roomCode);
+    
+    router.push(`/rooms/${roomCode}`);
   }
 
   function joinButton() {
