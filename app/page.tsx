@@ -15,19 +15,18 @@ export default function Home() {
   const [previewImages, setPreviewImages] = useState<string[]>([]);
 
   function fileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let submittedFiles = e.target.files;
     const fileText = document.getElementById('fileText');
-    if (!e.target.files) return;
+    if (!submittedFiles) return;
     if (!fileText) return;
 
     if (fileText.textContent == 'Import files') fileText.textContent = '';
 
-    for (let step = 0; step < e.target.files.length; step++) {
-      const file = e.target.files[step]                       
+    for (let step = 0; step < submittedFiles.length; step++) {
+      const file = submittedFiles[step]                       
       fileText.textContent += `${file.name}, `;               
 
       if (file.type.startsWith("image/")) { //if file is image: create a preview
-        console.log("recieved")
-
         const url = URL.createObjectURL(file);
         //create image element and insert with url as src parameter
         setPreviewImages(prev => [...prev, url]);
@@ -44,9 +43,8 @@ export default function Home() {
     for (let i = 0; i < 6; i++) {
       roomCode += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-    console.log(roomCode);
-    
-    router.push(`/rooms/${roomCode}`);
+
+    router.push(`/rooms/${roomCode}`); // redirects to room
   }
 
   function joinButton() {
