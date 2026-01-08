@@ -2,9 +2,11 @@
 import React, { MouseEventHandler, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { socket } from "../socket.js";
+import JoinRoom from "./components/JoinRoom.js"
 
 export default function Home() {
   const router = useRouter();
+  const [showJoinModal, setShowJoinModal] = useState(false);//trigger whether the modal for joinRoom button is shown
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -26,7 +28,7 @@ export default function Home() {
   }
 
   function joinRoom() {
-    console.log("Joined room")
+    setShowJoinModal(true);
   }
 
   return (
@@ -41,6 +43,8 @@ export default function Home() {
               <button id="joinButton"
               className="border-4 border-blue-200 py-5 px-10 bg-blue-400 font-semibold text-2xl"
               onClick={joinRoom}>Join a room</button>
+
+              {showJoinModal && <JoinRoom />} 
             </div>
           <div className="flex flex-col">
           </div>
