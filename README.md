@@ -1,5 +1,6 @@
 # SnapShare
 **CURRENTLY IN EARLY STAGES OF DEVELOPMENT**
+
 A real-time, peer-to-peer file sharing application built with **React** and **WebSockets**.
 
 ### Project
