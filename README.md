@@ -9,7 +9,6 @@ SnapShare was born out of a personal desire to transfer files instantaneously th
 ### Tech Stack
 * **Frontend:** React.JS, TailwindCSS
 * **Network:** WebSockets, Socket.io
-* **Environment:** Optimized for `localhost` development.
 
 ### How it Works
 1. **Host a Room:** A user initializes a session, generating a unique **Room Code**.
