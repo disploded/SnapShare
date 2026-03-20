@@ -1,7 +1,7 @@
-export default function JoinRoom() {
+export default function JoinRoom( { closeModal } ) {
   return (
     <div>
-      <div
+      <div onClick={closeModal}
         style={{
           position: "fixed",
           top: 0,
@@ -15,15 +15,22 @@ export default function JoinRoom() {
           zIndex: 999999,
         }}
       >
-        <div
+        <div onClick={(e) => e.stopPropagation()} //prevent modal closing on inner section clicks
           style={{
             background: "white",
-            padding: "2rem",
+            padding: "1.5rem",
             borderRadius: "8px",
-            width: "320px",
+            height: "18.5%",
+            width: "15.5%",
           }}
         >
-          <h2 style={{ marginBottom: "1rem" }}>Enter code</h2>
+          <div className="flex justify-between">
+            <h2 className="mb-4">Enter code</h2>
+            <button id="closeModal" className="
+            mb-4 px-2 cursor-pointer text-red-600 transition-transform duration-200 hover:scale-120 active:scale-95" 
+            onClick={closeModal}>X</button>
+          </div>
+
 
           <input
             type="text"
@@ -31,7 +38,7 @@ export default function JoinRoom() {
             autoFocus
             style={{
               width: "100%",
-              padding: "0.6rem",
+              padding: "1rem",
               fontSize: "1rem",
               marginBottom: "1rem",
               borderRadius: "4px",
@@ -39,16 +46,10 @@ export default function JoinRoom() {
             }}
           />
 
-          <button
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              backgroundColor: "#000",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+          <button 
+            className="w-full p-4 bg-black text-white border 
+            border-black rounded-md3 cursor-pointer 
+            transition-all duration-250 hover:bg-white hover:text-black"
           >
             Join
           </button>
