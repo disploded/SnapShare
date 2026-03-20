@@ -20,8 +20,8 @@ export default function JoinRoom( { closeModal } ) {
             background: "white",
             padding: "1.5rem",
             borderRadius: "8px",
-            height: "18.5%",
-            width: "15.5%",
+            height: "35vh",
+            width: "30vw",
           }}
         >
           <div className="flex justify-between">
