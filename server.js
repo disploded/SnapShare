@@ -16,6 +16,17 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     console.log(`User ${socket.id} has connected`)
+
+    socket.on("joinRoom", (roomId) => {
+      if (!roomId) return;
+      console.log(`Joined ${roomId}`)
+      socket.join(roomId);
+
+      // get value of how many people are currently in socket room & emit value
+      const room = io.sockets.adapter.rooms.get(roomId);
+      const newRoomCount = room ? room.size : 0;
+      io.to(roomId).emit("roomUpdate", newRoomCount);
+    })
   });
 
   httpServer
