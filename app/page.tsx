@@ -44,7 +44,8 @@ export default function Home() {
               className="border-4 border-blue-200 py-5 px-10 bg-blue-400 font-semibold text-2xl"
               onClick={joinRoom}>Join a room</button>
 
-              {showJoinModal && <JoinRoom />} 
+              {showJoinModal && (
+                <JoinRoom closeModal = {() => setShowJoinModal(!showJoinModal)/* onClick function to close modal */}/>)}
             </div>
           <div className="flex flex-col">
           </div>
