@@ -1,4 +1,18 @@
+import { useEffect, useRef } from "react";
+import { useRouter } from 'next/navigation';
+
 export default function JoinRoom( { closeModal } ) {
+  const joinButton = useRef();
+  const router = useRouter();
+
+  const joinFunction = () => {
+    if (joinButton.current) {
+      let roomCodeInput = joinButton.current.value;
+      roomCodeInput !== '' ? router.push(`../rooms/${roomCodeInput}`) : console.log("Empty input")
+    } // add feature that checks each room in app/rooms/_, then it will direct to that page
+    // if it exists, else error msg
+  }
+
   return (
     <div>
       <div onClick={closeModal}
@@ -34,7 +48,7 @@ export default function JoinRoom( { closeModal } ) {
 
           <input
             type="text"
-            placeholder="Room code"
+            placeholder="Enter a code: "
             autoFocus
             style={{
               width: "100%",
@@ -44,12 +58,14 @@ export default function JoinRoom( { closeModal } ) {
               borderRadius: "4px",
               border: "1px solid #ccc",
             }}
+            ref={joinButton}
           />
 
           <button 
             className="w-full p-4 bg-black text-white border 
             border-black rounded-md3 cursor-pointer 
             transition-all duration-250 hover:bg-white hover:text-black"
+            onClick={joinFunction}
           >
             Join
           </button>
