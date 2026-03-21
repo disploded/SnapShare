@@ -9,6 +9,8 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+const activeRooms = new Set();
+
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
@@ -16,6 +18,15 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     console.log(`User ${socket.id} has connected`)
+
+    socket.on("createRoom", (roomId) => {
+      activeRooms.add(roomId);
+    })
+
+    socket.on("checkRoom", (roomCodeInput, callback) => {
+      const exists = activeRooms.has(roomCodeInput);
+      callback(exists);
+    })
 
     socket.on("joinRoom", (roomId) => {
       if (!roomId) return;
