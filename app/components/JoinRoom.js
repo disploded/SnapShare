@@ -9,8 +9,7 @@ export default function JoinRoom( { closeModal } ) {
     if (joinButton.current) {
       let roomCodeInput = joinButton.current.value;
       roomCodeInput !== '' ? router.push(`../rooms/${roomCodeInput}`) : console.log("Empty input")
-    } // add feature that checks each room in app/rooms/_, then it will direct to that page
-    // if it exists, else error msg
+    }
   }
 
   return (
