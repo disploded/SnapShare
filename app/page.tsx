@@ -23,6 +23,7 @@ export default function Home() {
       roomCode += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
 
+    socket.emit("createRoom", roomCode)
     router.push(`/rooms/${roomCode}`); // redirects to room
 
   }
