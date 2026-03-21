@@ -19,11 +19,11 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     console.log(`User ${socket.id} has connected`)
 
-    socket.on("createRoom", (roomId) => {
+    socket.on("createRoom", (roomId) => { // add rooms to a set when created
       activeRooms.add(roomId);
     })
 
-    socket.on("checkRoom", (roomCodeInput, callback) => {
+    socket.on("checkRoom", (roomCodeInput, callback) => { // check if room exists when joining
       const exists = activeRooms.has(roomCodeInput);
       callback(exists);
     })
