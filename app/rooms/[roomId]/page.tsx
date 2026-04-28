@@ -1,32 +1,57 @@
 'use client';
 import { useParams } from "next/navigation";
 import FileInput from "@/app/components/FileInput.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { socket } from '../../../socket.js';
 
 export default function RoomPage() {
   const params = useParams<{ roomId: string }>();
   const [roomCount, setRoomCount] = useState(0);
   const [status, setStatus] = useState("loading");
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  const hasJoined = useRef(false); //prevent double prompts
 
   useEffect(() => {
-    if (!params.roomId) return; // don't emit if id isn't ready
+    if (!params.roomId || hasJoined.current) return; // don't emit if id isn't ready
+    hasJoined.current = true; // hasJoined = true if user connects to room
 
-    socket.emit("checkRoom", params.roomId, (exists: boolean) => {
-      if (exists) {
-        setStatus("valid")
-        socket.emit("joinRoom", params.roomId);
-      } else {
-        setStatus("invalid");
-      }
-    })
+    socket.removeAllListeners("roomUpdate"); //clear ghost events
 
     socket.on("roomUpdate", (newRoomCount) => {
       setRoomCount(newRoomCount);
     });
 
+    const startJoinProcess = () => {
+      socket.emit("checkRoom", params.roomId, (exists: boolean) => {
+        if (exists) {
+          setStatus("valid")
+          const password = prompt("Enter room password.")
+
+          if (password) {socket.emit("joinRoom", params.roomId, password, (response: any) => {
+            if (response.status === "success") {
+              setIsAuthorized(true);
+              console.log("Start webRTC")
+            } else {
+              alert(response.message);
+              hasJoined.current = false;
+            }
+          });}
+        } else {
+          setStatus("invalid");
+        }
+      })
+    }
+
+    // ensure socket is connected before emitting events...
+    if (socket.connected) {
+      startJoinProcess();
+    } else {
+      socket.once("connect", startJoinProcess);
+    }
+
     return () => {
-      socket.off("roomUpdate")
+      socket.off("roomUpdate");
     };
   }, [params.roomId]);
 
@@ -41,6 +66,8 @@ if (status === "invalid") return (
       </button>
     </div>
   );
+
+if (!isAuthorized) return <div className="p-20 text-center">Waiting for authorization...</div>
 
 return (
   <div className="min-h-screen flex items-center justify-center bg-zinc-100 px-4">
