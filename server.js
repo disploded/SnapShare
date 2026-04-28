@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
+import bcrypt from "bcrypt";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -9,7 +10,10 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
-const activeRooms = new Set();
+const activeRooms = new Map();
+activeRooms.set("test", { 
+  passwordHash: bcrypt.hashSync("123", 12) 
+});
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
@@ -19,8 +23,9 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     console.log(`User ${socket.id} has connected`)
 
-    socket.on("createRoom", (roomId) => { // add rooms to a set when created
-      activeRooms.add(roomId);
+    socket.on("createRoom", async ({roomId, password}) => { // add rooms to a set when created
+      const hash = await bcrypt.hash(password, 12);
+      activeRooms.set(roomId, {passwordHash: hash})
     })
 
     socket.on("checkRoom", (roomCodeInput, callback) => { // check if room exists when joining
@@ -28,15 +33,37 @@ app.prepare().then(() => {
       callback(exists);
     })
 
-    socket.on("joinRoom", (roomId) => {
-      if (!roomId) return;
-      console.log(`Joined ${roomId}`)
-      socket.join(roomId);
+    socket.on("joinRoom", (roomId, password, callback) => {
+      if (!roomId) return callback({ status: "error", message: "No room ID"})
+      const roomData = activeRooms.get(roomId);
 
-      // get value of how many people are currently in socket room & emit value
-      const room = io.sockets.adapter.rooms.get(roomId);
-      const newRoomCount = room ? room.size : 0;
-      io.to(roomId).emit("roomUpdate", newRoomCount);
+      if (roomData && bcrypt.compareSync(password, roomData.passwordHash)) { //verify password
+        socket.join(roomId);
+
+        // get value of how many people are currently in socket room & emit value
+        process.nextTick(() => {
+          const socketRoom = io.sockets.adapter.rooms.get(roomId);
+          const newRoomCount = socketRoom ? socketRoom.size : 0;
+
+          io.to(roomId).emit("roomUpdate", newRoomCount);
+        })
+
+        callback({status: "success"})
+      } else {
+        callback({status: "error", message: "Invalid password"})
+      }
+    })
+
+    socket.on("disconnecting", () => {
+      for (const roomId of socket.rooms) {
+        if (roomId !== socket.id) {
+          const socketRoom = io.sockets.adapter.rooms.get(roomId);
+          
+          if (socketRoom) {
+            io.to(roomId).emit("roomUpdate", socketRoom.size - 1);
+          }
+        }
+      }
     })
   });
 
